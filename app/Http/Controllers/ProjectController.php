@@ -17,12 +17,22 @@ class ProjectController extends Controller
         //
         $query = Project::query();
 
+        if (request("name"))
+        {
+            $query->where("name", "like", "%" . request("name") . "%");
+        }
+        if (request("status"))
+        {
+            $query->where("status", request("status"));
+        }
+
         $projects = $query->paginate(10)->onEachSide(1);
        
         //Unlike typical .blade file sensitive info can be visible here
         //Do Not pass sensitive info to inertia php front page
         return inertia("Project/Index", [
             "projects" => ProjectResource::collection($projects),
+            'queryParams' => request()->query() ?: null,
         ]);
     }
 
