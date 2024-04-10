@@ -17,6 +17,9 @@ class ProjectController extends Controller
         //
         $query = Project::query();
 
+        $sortFields = request("sort_field", 'created_at');
+        $sortDirection = request("sort_direction", "desc");
+
         if (request("name"))
         {
             $query->where("name", "like", "%" . request("name") . "%");
@@ -26,7 +29,7 @@ class ProjectController extends Controller
             $query->where("status", request("status"));
         }
 
-        $projects = $query->paginate(10)->onEachSide(1);
+        $projects = $query->orderBy($sortFields, $sortDirection)->paginate(10)->onEachSide(1);
        
         //Unlike typical .blade file sensitive info can be visible here
         //Do Not pass sensitive info to inertia php front page
