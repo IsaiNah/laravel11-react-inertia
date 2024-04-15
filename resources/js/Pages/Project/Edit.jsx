@@ -6,14 +6,14 @@ import InputError from "@/Components/InputError";
 import TextAreaInput from "@/Components/TextAreaInput";
 import SelectInput from "@/Components/SelectInput";
 
-export default function Create({auth}){
+export default function Create({auth, project}){
     const {data, setData, post, errors, reset} =
     useForm({
         image:'',
-        name:'',
-        status:'',
-        description:'',
-        due_date:'',
+        name:project.name || "",
+        status:project.status || "",
+        description:project.description || "",
+        due_date:project.due_date || "",
     })
 
     const onSubmit = (e) => {
@@ -28,7 +28,7 @@ export default function Create({auth}){
         header={
             <div className="flex justify-between items-center">
                 <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-             Create New Project
+             Edit Project "{project.name}"
             </h2>
           
             </div>
@@ -45,6 +45,11 @@ export default function Create({auth}){
                     shadow sm:rounded-lg">
                         {/* project image */}
                         {/* <pre>{data.image}</pre> */}
+                        {project.image_path && 
+                            <div className="mb-4"> 
+                                <img src={project.image_path} className="w-64" />
+                            
+                            </div>}
                        <div>
                         <InputLabel 
                         htmlFor="project_image_path"

@@ -9,6 +9,7 @@ use App\Http\Resources\ProjectResource;
 use App\Http\Resources\TaskResource;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class ProjectController extends Controller
 {
@@ -59,9 +60,15 @@ class ProjectController extends Controller
     {
         //
         $data = $request->validated();
-        // dd($data); //<- dumps all entry data for validations
+        /** @var $image \Illuminate\Http\UploadedFile */
+        // dd($data); // <- dumps all entry data for validations
+        $image = $data['image'] ?? null;
         $data['created_by'] = Auth::id();
         $data['updated_by'] = Auth::id();
+        if ($image) //if image exists we save it saving and updating data with image path and saving image + data in the database
+        {
+           $data['image_path'] = $image->store('project/' . Str::random(), 'public'); 
+        }
         Project::create($data);
 
         return to_route('project.index')->with('success', 'Project was created');
@@ -101,6 +108,9 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         //
+        return inertia('Project/Edit', [
+            'project' => new ProjectResource($project),
+        ]);
     }
 
     /**
@@ -117,5 +127,8 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         //
+        $name = $project->name;
+        $project->delete();
+        return to_route('project.index')->with('success', "Project \"$name\" deleted");
     }
 }
