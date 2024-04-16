@@ -14,12 +14,13 @@ export default function Create({auth, project}){
         status:project.status || "",
         description:project.description || "",
         due_date:project.due_date || "",
+        _method: "PUT",
     })
 
     const onSubmit = (e) => {
         e.preventDefault();
 
-        post(route("project.store"));
+        put(route("project.update", project.id));
     };
 
     return(
@@ -45,6 +46,7 @@ export default function Create({auth, project}){
                     shadow sm:rounded-lg">
                         {/* project image */}
                         {/* <pre>{data.image}</pre> */}
+                        <pre>{JSON.stringify(data, undefined, 2)}</pre>
                         {project.image_path && 
                             <div className="mb-4"> 
                                 <img src={project.image_path} className="w-64" />

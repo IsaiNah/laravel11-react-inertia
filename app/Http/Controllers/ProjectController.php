@@ -10,6 +10,7 @@ use App\Http\Resources\TaskResource;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
@@ -49,7 +50,7 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        //
+        //The create button *
         return inertia("Project/Create");
     }
 
@@ -119,6 +120,20 @@ class ProjectController extends Controller
     public function update(UpdateProjectRequest $request, Project $project)
     {
         //
+        $data = $request->validated();
+        $image = $data['image'] ?? null;
+        $data['updated_by'] = Auth::id();
+        if ($image) //if image exists we save it saving and updating data with image path and saving image + data in the database
+        {
+            if ($project->image_path)
+            {
+                Storage::disk('public')->deleteDirectory(dirname($project->image_path));
+            }
+           $data['image_path'] = $image->store('project/' . Str::random(), 'public'); 
+        }
+        $project->update($data);
+
+        return to_route('project.index')->with('success', "Project \"$project->name\" was updated successfully");  
     }
 
     /**
@@ -129,6 +144,10 @@ class ProjectController extends Controller
         //
         $name = $project->name;
         $project->delete();
+        if ($project->image_path)
+        {
+            Storage::disk('public')->deleteDirectory(dirname($project->image_path));
+        }
         return to_route('project.index')->with('success', "Project \"$name\" deleted");
     }
 }
