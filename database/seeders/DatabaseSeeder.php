@@ -3,30 +3,40 @@
 namespace Database\Seeders;
 
 use App\Models\Project;
+use App\Models\Task;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
+        $user = User::factory()->create([
             'id' => 1,
-            'name' => 'Zura',
-            'email' => 'zura@example.com',
-            'password' => bcrypt('123.321A'),
-            'email_verified_at' => time()
+            'name' => 'Isai',
+            'email' => 'isainahshunov@gmail.com',
+            'password' => bcrypt('!@#Test#@!'),
+            'email_verified_at' => now(),
         ]);
 
-        Project::factory()
-        ->count(30)
-        ->hasTasks(30)
-        ->create();
+        $projects = Project::factory()
+            ->count(30)
+            ->create([
+                'created_by' => $user->id,
+                'updated_by' => $user->id,
+            ]);
+
+        foreach ($projects as $project) {
+            $tasks = Task::factory()
+                ->count(30)
+                ->create([
+                    'project_id' => $project->id,
+                    'assigned_user_id' => $user->id,
+                    'created_by' => $user->id,
+                    'updated_by' => $user->id,
+                ]);
+        }
     }
 }
+
+?>
