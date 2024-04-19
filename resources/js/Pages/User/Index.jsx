@@ -44,6 +44,11 @@ export default function Index({auth, users, queryParams = null, success}){
         };
 
         const deleteUser = (user) => {
+            if (user.id === 1) {
+                alert("The admin account cannot be deleted.");
+                return;
+            }
+            
             if (!window.confirm("You are about to delete this user, are you sure?"))
             {
                 return;
@@ -51,6 +56,16 @@ export default function Index({auth, users, queryParams = null, success}){
            router.delete(route("user.destroy", user.id))
 
           // href={route("user.destroy", user.id)}; 
+        };
+
+        const editUserCheck = (user) => {
+            if (user.id === 1) {
+                alert("The admin account cannot be edited.");
+                return;
+            }
+        
+            // Proceed with the edit functionality
+            window.location.href = route("user.edit", user.id);
         };
     
 
@@ -176,12 +191,14 @@ export default function Index({auth, users, queryParams = null, success}){
                                        {user.created_at}
                                        </td>
                                        <td className="px-3 py-2 text-nowrap">
-                                       <Link href={route('user.edit', user.id)}
+                                       <button 
+                                       //href={route('user.edit', user.id)}
                                         className="font-medium text-blue-600
                                         dark:text-blue-500 hover:underline mx-1"
+                                        onClick={(e) => editUserCheck(user)}
                                         >
                                         Edit
-                                       </Link>
+                                       </button>
                                        <button href={route('user.destroy', user.id)}
                                         className="font-medium text-red-600
                                         dark:text-red-500 hover:underline mx-1"

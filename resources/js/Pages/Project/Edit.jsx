@@ -46,7 +46,7 @@ export default function Create({auth, project}){
                     shadow sm:rounded-lg">
                         {/* project image */}
                         {/* <pre>{data.image}</pre> */}
-                        <pre>{JSON.stringify(data, undefined, 2)}</pre>
+                        {/* <pre>{JSON.stringify(data, undefined, 2)}</pre> */}
                         {project.image_path && 
                             <div className="mb-4"> 
                                 <img src={project.image_path} className="w-64" />

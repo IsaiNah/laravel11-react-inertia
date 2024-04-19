@@ -20,17 +20,15 @@ class UserController extends Controller
         $sortFields = request("sort_field", 'created_at');
         $sortDirection = request("sort_direction", "desc");
 
-        if (request("name"))
-        {
+        if (request("name")) {
             $query->where("name", "like", "%" . request("name") . "%");
         }
-        if (request("email"))
-        {
+        if (request("email")) {
             $query->where("email", "like", "%" . request("email") . "%");
         }
 
         $users = $query->orderBy($sortFields, $sortDirection)->paginate(10)->onEachSide(1);
-       
+
         //Unlike typical .blade file sensitive info can be visible here
         //Do Not pass sensitive info to inertia php front page
         return inertia("User/Index", [
@@ -59,7 +57,7 @@ class UserController extends Controller
         //$data['email_verified_at'] = time(); // <- This controls the verifiy for user. Uncomment if don't want verify user post creation | will be autoverified
         $data['password'] = bcrypt($data['password']);
         // dd($data); // <- dumps all entry data for validations
-        
+
         User::create($data);
 
         return to_route('user.index')->with('success', 'User was created');
@@ -92,17 +90,14 @@ class UserController extends Controller
         //
         $data = $request->validated();
         $password = $data['password'] ?? null;
-        if ($password)
-        {
-            $data['password'] =bcrypt($password);
-        }
-        else
-        {
+        if ($password) {
+            $data['password'] = bcrypt($password);
+        } else {
             unset($data['password']);
         }
         $user->update($data);
 
-        return to_route('user.index')->with('success', "User \"$user->name\" was updated successfully");  
+        return to_route('user.index')->with('success', "User \"$user->name\" was updated successfully");
     }
 
     /**
@@ -110,10 +105,21 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
         $name = $user->name;
-        $user->delete();
        
-        return to_route('user.index')->with('success', "User \"$name\" deleted");
+        //
+        // Check if the user is the first user created (from the DatabaseSeeder)
+        if ($user->id === 1) {
+            //return back()->with('error', 'The first user cannot be deleted.');
+            return to_route('user.index')->with('error', "User \"$name\" CANNOT deleted");
+        }
+        else{
+            $user->delete();
+            return to_route('user.index')->with('success', "User \"$name\" deleted");
+        }
+
+
+
+      
     }
 }
